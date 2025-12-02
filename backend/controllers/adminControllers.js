@@ -8,9 +8,9 @@ const registerAdmin= async (req, res)=>{
         return res.status(400).json({message:"All fields are required"});
     }
     try{
-        const existingAdmin = await Admin.findOne({email});
-        if(existingAdmin){
-            return res.status(400).json({message:"Admin already exists"});
+        const existingAdmin = await Admin.find();
+        if(existingAdmin && existingAdmin.length>0){
+            return res.status(401).json({message:"Admin already exists"});
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const admin = new Admin({name, email, password:hashedPassword});
