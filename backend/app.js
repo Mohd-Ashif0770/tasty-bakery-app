@@ -6,6 +6,7 @@ const Product = require('./models/product');
 const app= express();   
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const PORT = process.env.PORT || 5000;
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 //! Routes
 app.use('/api/products', productRoutes);
 app.use('/api', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
     res.send("Hello World");
