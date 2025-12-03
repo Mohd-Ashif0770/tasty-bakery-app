@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const registerUser = async (req, res)=>{
     const {name, email, password}= req.body;
@@ -37,8 +38,16 @@ const loginUser = async (req, res)=>{
     if(!decodedPassword){
         return res.status(400).json({message:"Invalid password"});
     }
-    const token = jwt.sign({userId:user._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
-    res.cookie('token', token);
+    const token = jwt.sign({userId:user._id}, process.env.JWT_SECRET, {expiresIn:'1d'});
+    // res.cookie('token', token, {httpOnly:true});
+    res.cookie('token', token, {
+    httpOnly: true,
+    secure: false,    // MUST be false for Postman/localhost
+    sameSite: 'lax',
+    path: '/',        // important for Postman
+    maxAge: 24 * 60 * 60 * 1000   // 1 day
+});
+
     res.status(200).json({message:"Login successful", user,token});
 }
 
@@ -47,4 +56,14 @@ const logoutUser = async (req, res)=>{
     res.status(200).json({message:"Logout successful"});
 }
 
-module.exports = {registerUser, loginUser};
+const getProfile= async(req, res)=>{
+    try{
+           res.status(200).send({message:'User profile accessed'})
+
+    }catch(err){
+        res.status(500).send({message:'internal server error'});
+    }
+ 
+}
+
+module.exports = {registerUser, loginUser, getProfile, logoutUser};
